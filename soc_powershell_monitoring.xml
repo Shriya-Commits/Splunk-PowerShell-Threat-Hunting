@@ -1,0 +1,22 @@
+<dashboard version="1.1" theme="light">
+  <label>SOC Monitoring: Malicious PowerShell Activity</label>
+  <row>
+    <panel>
+      <title>Adversary PowerShell Monitoring</title>
+      <chart>
+        <title>Top Users Running PowerShell</title>
+        <search>
+          <query>index=botsv3 "powershell.exe" 
+| xmlkv 
+| stats count by user</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
