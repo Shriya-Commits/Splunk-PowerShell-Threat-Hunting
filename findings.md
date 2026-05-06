@@ -1,23 +1,23 @@
 # Investigation Findings
 
 ## Scenario
-Boss of the SOC v3 dataset — Frothly brewery breach. Goal: determine if PowerShell
-was used as an attack vector and identify the affected accounts.
+Boss of the SOC v3 dataset: Frothly brewery breach. 
+Goal: determine if PowerShell was used as an attack vector and identify the affected accounts.
 
-## Step 1 — Baseline: Who is running PowerShell?
+## Step 1 - Baseline: Who is running PowerShell?
 Query 01 returned 5 accounts running powershell.exe across the environment:
 FyodorMalteskesko (dominant), AlBungstein, BruceGist, BudStoll, and FYODOR-L$.
-FyodorMalteskesko accounted for the large majority of executions — immediately
+FyodorMalteskesko accounted for the large majority of executions, immediately
 suspicious as an outlier compared to peers.
 
-## Step 2 — Encoded Command Detection
+## Step 2 - Encoded Command Detection
 Query 02 returned 16 events across 11 distinct command lines. Every result contained
 powershell.exe invoked with -NoP -NonI -W Hidden -enc flags followed by Base64-encoded
 payloads. The -W Hidden flag suppresses the PowerShell window entirely, confirming
 deliberate evasion. One entry showed schtasks.exe creating a scheduled task pointing
-back to powershell.exe — indicating persistence establishment.
+back to powershell.exe indicating persistence establishment.
 
-## Step 3 — Parent/Child Process Analysis
+## Step 3 - Parent/Child Process Analysis
 Query 03 analyzed 9,212 process creation events and surfaced 176 unique parent-child
 relationships. Top suspicious chains:
 - cmd.exe → WMIC.exe: 966 occurrences
