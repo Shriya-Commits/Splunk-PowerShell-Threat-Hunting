@@ -1,7 +1,8 @@
 #  Splunk Threat Hunting: Malicious PowerShell Detection
 **Platform:** Splunk Enterprise (Home Lab)
 **Dataset:** Boss of the SOC v3 (Frothly brewery scenario)
-**Technique Detected:** MITRE ATT&CK T1059.001; Command and Scripting Interpreter: PowerShell
+**Technique Detected:** MITRE ATT&CK T1059.001 
+**Command and Scripting Interpreter:** PowerShell
 **Log Source:** Windows Sysmon EventID 1 (Process Create)
 
 ## Project Objective
