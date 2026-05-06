@@ -1,7 +1,7 @@
 #  Splunk Threat Hunting: Malicious PowerShell Detection
 **Platform:** Splunk Enterprise (Home Lab)
 **Dataset:** Boss of the SOC v3 (Frothly brewery scenario)
-**Technique Detected:** MITRE ATT&CK T1059.001 — Command and Scripting Interpreter: PowerShell
+**Technique Detected:** MITRE ATT&CK T1059.001; Command and Scripting Interpreter: PowerShell
 **Log Source:** Windows Sysmon EventID 1 (Process Create)
 
 ## Project Objective
@@ -9,7 +9,7 @@ The goal of this project was to identify and visualize Living off the Land (LotL
 used by adversaries. Specifically, I focused on detecting unauthorized PowerShell execution 
 (MITRE ATT&CK T1059.001) where scripts were obfuscated or security policies were bypassed.
 Attackers frequently abuse PowerShell with -EncodedCommand and -ExecutionPolicy Bypass flags 
-to evade defenses — this lab hunts for exactly those patterns in real-world breach data.
+to evade defenses.
 
 ## Investigation Workflow
 
@@ -18,7 +18,7 @@ Started by identifying all accounts executing powershell.exe across the environm
 to establish a baseline and surface outliers. Used `xmlkv` to parse the raw Sysmon
 XML and extract the `user` field, then aggregated by user to compare execution frequency.
 
-**Result:** 5 accounts identified — FyodorMalteskesko dominated execution count
+**Result:** 5 accounts identified of which FyodorMalteskesko dominated execution count
 compared to peers, making it the highest-priority account for follow-up investigation.
 
 See: [`queries/01_baseline_powershell_users.spl`](queries/01_baseline_powershell_users.spl)
@@ -27,7 +27,7 @@ See: [`queries/01_baseline_powershell_users.spl`](queries/01_baseline_powershell
 
 ### Step 2 — Encoded Command Detection
 Filtered for PowerShell command lines containing `-enc` (Base64-encoded payload flag)
-combined with `-NoP -NonI -W Hidden` — flags that suppress user interaction and hide
+combined with `-NoP -NonI -W Hidden`: flags that suppress user interaction and hide
 the PowerShell window entirely, indicating deliberate evasion of detection.
 
 Used `rex` to extract the `CommandLine` field directly from the raw Sysmon XML blob,
@@ -82,13 +82,13 @@ timeline. The XML file to import this dashboard is at `soc_powershell_monitoring
 
 ## Key Findings
 
-- **5 accounts** identified running PowerShell across the environment — FyodorMalteskesko
+- **5 accounts** identified running PowerShell across the environment: FyodorMalteskesko
   accounted for the dominant share of executions compared to all other accounts combined.
 - **16 encoded PowerShell events** detected across **11 distinct command lines**, every one
-  using `-NoP -NonI -W Hidden -enc` flags — confirming deliberate evasion, not accidental execution.
-- Attacker established **persistence via scheduled task** — `schtasks.exe` was observed
+  using `-NoP -NonI -W Hidden -enc` flags, confirming deliberate evasion, not accidental execution.
+- Attacker established **persistence via scheduled task** - `schtasks.exe` was observed
   creating a task pointing back to `powershell.exe` with encoded payload arguments.
-- **9,212 process creation events** analyzed — top suspicious chains were `cmd.exe → WMIC.exe`
+- **9,212 process creation events** analyzed. Top suspicious chains were `cmd.exe → WMIC.exe`
   (476 occurrences) and `cmd.exe → reg.exe` (461 occurrences), both classic Living off the
   Land techniques consistent with scripted attacker activity.
 - All findings map to Sysmon **EventID 1** (Process Create) from the BOTSv3 dataset.
