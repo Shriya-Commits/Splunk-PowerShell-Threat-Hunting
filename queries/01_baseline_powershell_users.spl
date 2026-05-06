@@ -1,1 +1,3 @@
-
+index=botsv3 "powershell.exe"
+| xmlkv
+| stats count by user
