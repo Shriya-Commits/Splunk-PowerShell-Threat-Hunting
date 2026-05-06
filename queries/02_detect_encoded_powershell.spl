@@ -1,0 +1,4 @@
+index=botsv3 source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+| rex "Name='CommandLine'>(?<cmd>[^<]+)"
+| search cmd="*powershell*"
+| stats count by cmd
