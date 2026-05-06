@@ -1,0 +1,5 @@
+index=botsv3 source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+| rex "Name='Image'>(?<process>[^<]+)"
+| rex "Name='ParentImage'>(?<parent>[^<]+)"
+| stats count by parent, process
+| sort -count
