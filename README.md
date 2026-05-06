@@ -1,3 +1,15 @@
+## Incident Summary
+
+Analysis of the BOTSv3 dataset revealed suspicious PowerShell activity consistent with Living-off-the-Land (LotL) attack techniques. 
+
+Anomalous behavior was identified from the account FyodorMalteskesko, which executed a high volume of encoded PowerShell commands using evasion flags (-NoP, -NonI, -W Hidden, -EncodedCommand).
+
+Further investigation uncovered:
+- Persistence via scheduled task creation (schtasks.exe → powershell.exe)
+- Lateral movement and system modification using LOLBins (WMIC, reg.exe)
+
+This activity is consistent with post-compromise attacker behavior involving fileless malware execution and stealthy persistence mechanisms.
+
 #  Splunk Threat Hunting: Malicious PowerShell Detection
 **Platform:** Splunk Enterprise (Home Lab)
 **Dataset:** Boss of the SOC v3 (Frothly brewery scenario)
@@ -93,3 +105,24 @@ timeline. The XML file to import this dashboard is at `soc_powershell_monitoring
   (476 occurrences) and `cmd.exe → reg.exe` (461 occurrences), both classic Living off the
   Land techniques consistent with scripted attacker activity.
 - All findings map to Sysmon **EventID 1** (Process Create) from the BOTSv3 dataset.
+
+## False Positive Considerations
+
+- Encoded PowerShell commands may be used by administrators or automation tools
+- WMIC and reg.exe are legitimate system utilities
+
+However, the combination of:
+- High execution frequency
+- Evasion flags
+- Persistence mechanisms
+
+reduces the likelihood of benign activity.
+
+## Recommended Response Actions
+
+- Isolate affected host associated with FyodorMalteskesko.
+- Disable or investigate the user account.
+- Remove malicious scheduled tasks.
+- Block identified command-line patterns and indicators.
+- Hunt across environment for similar PowerShell execution patterns.
+- Enable enhanced PowerShell logging if not already configured.
